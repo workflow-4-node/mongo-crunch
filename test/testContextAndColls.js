@@ -28,7 +28,7 @@ describe("MongoDBContext", function () {
                                     collectionRef: {
                                         name: "coll2",
                                         mustExists: false,
-                                        deleteOnSave: true
+                                        deleteOnExit: true
                                     }
                                 },
                                 tmp: {
