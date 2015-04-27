@@ -1,0 +1,15 @@
+{
+  "name": "mongo-crunch",
+  "version": "0.0.1",
+  "dependencies": {
+    "backpack-node": "^0.1.25",
+    "bluebird": "^2.9.24",
+    "fast.js": "^0.1.1",
+    "guid": "0.0.12",
+    "lodash": "^3.7.0",
+    "mongodb": "^2.0.28"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.4"
+  }
+}
