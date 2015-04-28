@@ -1,13 +1,16 @@
 "use strict";
 /* global describe,it */
 var ActivityExecutionEngine = require("../deps/workflow-4-node").activities.ActivityExecutionEngine;
-var Collection = require("mongodb").Collection;
 var _ = require("lodash");
 var assert = require("assert");
 var path = require("path");
+var Bluebird = require("bluebird");
+var async = Bluebird.coroutine;
+var Collection = require("mongodb").Collection;
+var MongoClient = Bluebird.promisifyAll(require("mongodb").MongoClient);
 
 describe("MongoDBContext", function () {
-    it("should open a connection as default", function (done) {
+    it("should open a connection as default, and use some collections", function (done) {
         this.timeout(3000);
 
         var engine = new ActivityExecutionEngine({
@@ -61,6 +64,38 @@ describe("MongoDBContext", function () {
             ]
         });
 
-        engine.invoke().nodeify(done);
+        async(function*() {
+            var db = yield Bluebird.promisify(MongoClient.connect, MongoClient)(process.env.MONGO_URL);
+            var coll1 = yield Bluebird.promisify(db.collection, db)("coll1");
+            yield Bluebird.promisify(coll1.deleteMany, coll1)({}, { w: 1 });
+            yield Bluebird.promisify(coll1.insert, coll1)([
+                {
+                    name: "Bubu",
+                    score: 1
+                },
+                {
+                    name: "Zuzu",
+                    score: 7
+                }], { w: 1 });
+
+            yield engine.invoke();
+
+            var cc = db.listCollections();
+            var colls = yield Bluebird.promisify(cc.toArray, cc)();
+            assert.equal(_.where(colls, { name: "coll2" }).length, 0);
+            assert.equal(colls.filter(function(c) { return _.startsWith(c.name, "foo_tmp_"); }).length, 0);
+
+            yield Bluebird.promisify(coll1.drop, coll1)();
+            try {
+                yield engine.invoke();
+                assert(false);
+            }
+            catch (e) {
+            }
+            cc = db.listCollections();
+            colls = yield Bluebird.promisify(cc.toArray, cc)();
+            assert.equal(colls.length, 1);
+
+        })().nodeify(done);
     });
 });
