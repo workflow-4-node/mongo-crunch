@@ -1,11 +1,16 @@
 {
   "name": "mongo-crunch",
-  "version": "0.0.1",
+  "description": "Workflow 4 Node extensions for MongoDB",
+  "version": "0.0.2",
+  "license": "LGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unbornchikken/mongo-crunch"
+  },
   "main": "./index",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha tests",
-    "compile": "node ./node_modules/gulp/bin/gulp.js",
-    "prepublish": "npm run compile && npm test"
+    "compile": "node ./node_modules/gulp/bin/gulp.js"
   },
   "dependencies": {
     "backpack-node": "^0.1.25",

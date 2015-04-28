@@ -13,6 +13,6 @@ if (es6) {
 else {
     require("traceur");
     module.exports = {
-        activities: require("./lib/activities")
+        activities: require("./lib4node/activities")
     };
 }
