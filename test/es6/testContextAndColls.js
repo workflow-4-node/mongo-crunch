@@ -1,6 +1,7 @@
 "use strict";
 /* global describe,it */
-var ActivityExecutionEngine = require("../deps/workflow-4-node").activities.ActivityExecutionEngine;
+var wf4node = require("../../deps/workflow-4-node");
+var ActivityExecutionEngine = wf4node.activities.ActivityExecutionEngine;
 var _ = require("lodash");
 var assert = require("assert");
 var path = require("path");
@@ -9,12 +10,19 @@ var async = Bluebird.coroutine;
 var Collection = require("mongodb").Collection;
 var MongoClient = Bluebird.promisifyAll(require("mongodb").MongoClient);
 
+var es = "es6";
+try {
+    eval("(function *(){})");
+} catch (err) {
+    es = "es5";
+}
+
 describe("MongoDBContext", function () {
     it("should open a connection as default, and use some collections", function (done) {
         this.timeout(3000);
 
         var engine = new ActivityExecutionEngine({
-            "@require": path.join(__dirname, "../lib/activities"),
+            "@require": path.join(__dirname, "../../lib/" + es + "/activities"),
             block: [
                 {
                     mongoDBContext: {
