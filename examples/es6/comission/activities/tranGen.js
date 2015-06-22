@@ -42,7 +42,17 @@ TranGen.prototype.createImplementation = function() {
                 }
             },
             args: [
+                {
+                    for: {
+                        from: 0,
+                        to: "# this.get('size')",
+                        body: {
+                            insert: {
 
+                            }
+                        }
+                    }
+                }
             ]
         }
     };
