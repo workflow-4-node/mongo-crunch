@@ -22,6 +22,9 @@
   "rules": {
     "no-underscore-dangle": false,
     "no-unused-vars": false,
+    "no-duplicate-case": false,
+    "no-new-func": false,
+    "no-loop-func": false,
     "camelcase": false,
     "eol-last": false,
     "semi": 2,
