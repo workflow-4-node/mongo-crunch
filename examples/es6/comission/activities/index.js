@@ -1,5 +1,6 @@
 "use strict";
 
 module.exports = {
-    TranGen: require("./tranGen")
+    TranGen: require("./tranGen"),
+    Collect: require("./collect")
 };

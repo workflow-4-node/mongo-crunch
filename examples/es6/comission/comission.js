@@ -17,7 +17,60 @@ let wf = {
     mongoDBContext: {
         connections: process.env.MONGO_URL,
         body: {
-            tranGen: {}
+            block: {
+                transactions: {
+                    collectionRef: {
+                        name: "transactions",
+                        clearBeforeUse: true,
+                        mustExists: false
+                    }
+                },
+                aggregates: {
+                    collectionRef: {
+                        name: "aggregates",
+                        clearBeforeUse: true,
+                        mustExists: false
+                    }
+                },
+                list: {
+                    collectionRef: {
+                        name: "fixList",
+                        mustExists: true
+                    }
+                },
+                args: [
+                    {
+                        tranGen: {
+                            size: 10,
+                            collection: "= transactions"
+                        }
+                    },
+                    {
+                        eachDocument: {
+                            querify: true,
+                            documents: {
+                                find: {
+                                    collection: "= list"
+                                }
+                            },
+                            body: {
+                                collect: {
+                                    source: "= transactions",
+                                    target: "= aggregates",
+                                    groupFieldValue: "$itemID02",
+                                    pipeline: [
+                                        {
+                                            $group: {
+                                                _id: "$itemID02"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
         }
     }
 };

@@ -7,22 +7,13 @@ let util = require("util");
 let wf4node = require("../../../../deps/workflow-4-node");
 let Composite = wf4node.activities.Composite;
 let path = require("path");
-
-/*
-Általánosan a rendszerrõl feltételzzük, hogy a tranzakciók 100 adatot tartalmaznak,
-1 ID típusú adatot 9 természetes azonosítót (lehet külsõ kulcs de most csak bigint),
-40-30-20 karakter - valós szám illetve dátum értéket.
-A tranzakciók és a beállítások száma és elõállítása még megbeszélendõ, de kb.
-A természetes azonosítók értéke 1 sé 10000 közötti véletlen szám minden természetes azonosító esetén.
-Karakterek B+ termékkódok. számok pozitív véletlenek, dátumok 2010.01.01 és 2014.12.31 közöttiek.
-Beállítások lista vagy intervallum. Lista elemszáma 1 és 100 közötti, tartalma a kódértékek listája.
-Intervallum esetén a létrehozott tranzakciók alapján kb a 80% a a tranzakcióknak essen bele a létrehozott intervallumokba.
-*/
+let _ = require("lodash");
 
 function TranGen() {
     Composite.call(this);
-    this.reserved("collName", "transactions");
-    this.reserved("size", 1000);
+
+    this.collection = null;
+    this.size = 1000;
 }
 
 util.inherits(TranGen, Composite);
@@ -31,13 +22,7 @@ TranGen.prototype.createImplementation = function () {
     return {
         "@require": path.join(__dirname, "../../../../lib/" + es + "/activities"),
         block: {
-            coll: {
-                collectionRef: {
-                    name: "= collName",
-                    clearBeforeUse: true,
-                    mustExists: false
-                }
-            },
+            coll: "= collection",
             args: [
                 {
                     for: {
@@ -46,8 +31,63 @@ TranGen.prototype.createImplementation = function () {
                         body: {
                             insert: {
                                 collection: "= coll",
-                                documents: {
-                                    poo: 5
+                                documents: function () {
+                                    let doc = {
+                                        _id: this.get("i"),
+                                        createdAt: new Date()
+                                    };
+
+                                    function key(num) {
+                                        num = '' + num;
+                                        return num.length === 1 ? "0" + num : num;
+                                    }
+
+                                    // 9 természetes azonosítót (lehet külsõ kulcs de most csak bigint)
+                                    // A természetes azonosítók értéke 1 sé 10000 közötti véletlen szám minden természetes azonosító esetén.
+                                    const numOfID = 9;
+                                    const maxID = 10000;
+                                    for (let i = 0; i < numOfID; i++) {
+                                        doc[`itemID${key(i)}`] = _.random(1, maxID);
+                                    }
+
+                                    // 40-30-20 karakter - valós szám illetve dátum értéket.
+
+                                    // 40 karakter - Karakterek B+ termékkódok.
+                                    const numOfChars = 40;
+
+                                    function genProdCode(i) {
+                                        const start = (i % 10) + "A".charCodeAt(0);
+                                        const len = (i % 3) + 3;
+                                        let result = "";
+                                        for (let x = 0; x < len; x++) {
+                                            result += String.fromCharCode(start + _.random(0, 3));
+                                        }
+                                        return result;
+                                    }
+
+                                    for (let i = 0; i < numOfChars; i++) {
+                                        doc[`prodCode${key(i)}`] = genProdCode(i);
+                                    }
+
+                                    // 30 valós szám - számok pozitív véletlenek
+                                    const numOfNumbers = 30;
+                                    const maxNum = 1000000;
+                                    for (let i = 0; i < numOfNumbers; i++) {
+                                        doc[`number${key(i)}`] = Math.random() * maxNum;
+                                    }
+
+                                    // 20 dátum - dátumok 2010.01.01 és 2014.12.31 közöttiek
+                                    const numOfDates = 20;
+                                    const minDate = new Date(2010, 1, 1);
+                                    const maxDate = new Date(2014, 12, 31);
+                                    let genDate = function () {
+                                        return new Date(minDate.getTime() + Math.random() * (maxDate.getTime() - minDate.getTime()));
+                                    };
+                                    for (let i = 0; i < numOfDates; i++) {
+                                        doc[`date${key(i)}`] = genDate();
+                                    }
+
+                                    return doc;
                                 }
                             }
                         }
