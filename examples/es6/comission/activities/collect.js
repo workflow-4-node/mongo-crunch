@@ -29,20 +29,20 @@ util.inherits(Collect, Composite);
 Collect.prototype.createImplementation = function () {
     return {
         "@require": path.join(__dirname, "../../../../lib/" + es + "/activities"),
-        block: {
+        "@block": {
             pip: "= pipeline",
             args: [
                 {
-                    if: {
+                    "@if": {
                         condition: "= pip",
                         thenBody: {
-                            if: {
+                            "@if": {
                                 condition: "# typeof this.get('target') !== 'string'",
                                 thenBody: {
-                                    insert: {
+                                    "@insert": {
                                         collection: "= target",
                                         documents: {
-                                            aggregate: {
+                                            "@aggregate": {
                                                 collection: "= source",
                                                 pipeline: "= pip"
                                             }
@@ -50,7 +50,7 @@ Collect.prototype.createImplementation = function () {
                                     }
                                 },
                                 elseBody: {
-                                    aggregate: {
+                                    "@aggregate": {
                                         collection: "= source",
                                         pipeline: "= pip"
                                     }
@@ -110,9 +110,9 @@ Collect.prototype._setupAggregation = function (callContext, pipeline) {
     // Reshaping
     let groupFieldName = this.get("groupFieldName") || "group";
     let groupFieldValue = this.get("groupFieldValue");
-    if (!_.isUndefined(groupFieldValue) && !_.isNull(groupFieldValue)) {
+    if (!_.isUndefined(groupFieldValue) && !_.isNull(groupFieldValue) && groupFieldValue !== "") {
         let p = { $project: {} };
-        p.$project[groupFieldName] = groupFieldValue;
+        p.$project[groupFieldName] = { $literal: groupFieldValue };
         pipeline.push(p);
     }
 

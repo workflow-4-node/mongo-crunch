@@ -14,50 +14,50 @@ let wf = {
         path.join(__dirname, "../../../lib/" + es + "/activities"),
         path.join(__dirname, "activities")
     ],
-    mongoDBContext: {
+    "@mongoDBContext": {
         connections: process.env.MONGO_URL,
         body: {
-            block: {
+            "@block": {
                 transactions: {
-                    collectionRef: {
+                    "@collectionRef": {
                         name: "transactions",
                         clearBeforeUse: true,
                         mustExists: false
                     }
                 },
                 aggregates: {
-                    collectionRef: {
+                    "@collectionRef": {
                         name: "aggregates",
                         clearBeforeUse: true,
                         mustExists: false
                     }
                 },
                 list: {
-                    collectionRef: {
+                    "@collectionRef": {
                         name: "fixList",
                         mustExists: true
                     }
                 },
                 args: [
                     {
-                        tranGen: {
+                        "@tranGen": {
                             size: 10,
                             collection: "= transactions"
                         }
                     },
                     {
-                        eachDocument: {
+                        "@eachDocument": {
                             querify: true,
                             documents: {
-                                find: {
+                                "@find": {
                                     collection: "= list"
                                 }
                             },
                             body: {
-                                collect: {
+                                "@collect": {
                                     source: "= transactions",
                                     target: "= aggregates",
-                                    groupFieldValue: "$itemID02",
+                                    groupFieldValue: "Group",
                                     pipeline: [
                                         {
                                             $group: {

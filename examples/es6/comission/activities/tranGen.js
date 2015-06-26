@@ -21,15 +21,15 @@ util.inherits(TranGen, Composite);
 TranGen.prototype.createImplementation = function () {
     return {
         "@require": path.join(__dirname, "../../../../lib/" + es + "/activities"),
-        block: {
+        "@block": {
             coll: "= collection",
             args: [
                 {
-                    for: {
+                    "@for": {
                         from: 0,
                         to: "= size",
                         body: {
-                            insert: {
+                            "@insert": {
                                 collection: "= coll",
                                 documents: function () {
                                     let doc = {
