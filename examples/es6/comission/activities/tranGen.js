@@ -45,7 +45,7 @@ TranGen.prototype.createImplementation = function () {
                                     // 9 természetes azonosítót (lehet külsõ kulcs de most csak bigint)
                                     // A természetes azonosítók értéke 1 sé 10000 közötti véletlen szám minden természetes azonosító esetén.
                                     const numOfID = 9;
-                                    const maxID = 10000;
+                                    const maxID = 1000;
                                     for (let i = 0; i < numOfID; i++) {
                                         doc[`itemID${key(i)}`] = _.random(1, maxID);
                                     }
@@ -56,11 +56,11 @@ TranGen.prototype.createImplementation = function () {
                                     const numOfChars = 40;
 
                                     function genProdCode(i) {
-                                        const start = (i % 10) + "A".charCodeAt(0);
-                                        const len = (i % 3) + 3;
+                                        const start = "A".charCodeAt(0);
+                                        const len = (i % 3) + 2;
                                         let result = "";
                                         for (let x = 0; x < len; x++) {
-                                            result += String.fromCharCode(start + _.random(0, 3));
+                                            result += String.fromCharCode(start + _.random(0, len - 1));
                                         }
                                         return result;
                                     }

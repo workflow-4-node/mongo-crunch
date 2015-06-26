@@ -30,34 +30,34 @@ Collect.prototype.createImplementation = function () {
     return {
         "@require": path.join(__dirname, "../../../../lib/" + es + "/activities"),
         "@block": {
-            pip: "= pipeline",
+            collectRoot: "= $parent",
             args: [
                 {
                     "@if": {
-                        condition: "= pip",
-                        thenBody: {
+                        condition: "= collectRoot.pipeline",
+                        then: {
                             "@if": {
                                 condition: "# typeof this.get('target') !== 'string'",
-                                thenBody: {
+                                then: {
                                     "@insert": {
                                         collection: "= target",
                                         documents: {
                                             "@aggregate": {
                                                 collection: "= source",
-                                                pipeline: "= pip"
+                                                pipeline: "= collectRoot.pipeline"
                                             }
                                         }
                                     }
                                 },
-                                elseBody: {
+                                else: {
                                     "@aggregate": {
                                         collection: "= source",
-                                        pipeline: "= pip"
+                                        pipeline: "= collectRoot.pipeline"
                                     }
                                 }
                             }
                         },
-                        elseBody: function () {
+                        else: function () {
                             throw new Error("Not supported yet.");
                         }
                     }
@@ -91,9 +91,6 @@ Collect.prototype._setupAggregation = function (callContext, pipeline) {
     if (!_.isArray(pipeline)) {
         throw new Error("Pipeline is not an array.");
     }
-    if (!pipeline.length) {
-        throw new Error("Pipeline is empty.");
-    }
 
     pipeline = _.cloneDeep(pipeline);
 
@@ -120,6 +117,10 @@ Collect.prototype._setupAggregation = function (callContext, pipeline) {
     let target = this.get("target");
     if (_.isString(target)) {
         pipeline.push({ $out: target });
+    }
+
+    if (!pipeline.length) {
+        throw new Error("Pipeline is empty.");
     }
 
     this.set("pipeline", pipeline);
