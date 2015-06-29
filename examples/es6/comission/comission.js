@@ -49,7 +49,7 @@ let wf = {
                 },
                 ruleList: {
                     "@collectionRef": {
-                        name: "fixRuleList",
+                        name: "ruleList",
                         mustExists: true
                     }
                 },
@@ -72,44 +72,49 @@ let wf = {
                                     collection: "= ruleList"
                                 }
                             },
-                            body: {
-                                "@block": [
-                                    {
-                                        "@collect": {
-                                            source: "= transactions",
-                                            target: "= itemisedCommission",
-                                            condition: "# _.omit(this.get('rule'), ['_id', 'value', 'take'])",
-                                            pipeline: [
-                                                {
-                                                    $project: {
-                                                        "@merge": [
-                                                            {
-                                                                _id: 0,
-                                                                agentID: "$itemID01",
-                                                                ruleID: {
-                                                                    $literal: "# this.get('rule')._id"
-                                                                },
-                                                                commissionValue: {
-                                                                    $literal: "# this.get('rule').value"
-                                                                }
-                                                            },
-                                                            {
-                                                                transactionFields: {
-                                                                    "@merge": [
-                                                                        {
-                                                                            transactionID: "$_id"
+                            args: {
+                                "@if": {
+                                    condition: "= rule.commission.value",
+                                    then: {
+                                        "@block": [
+                                            {
+                                                "@collect": {
+                                                    source: "= transactions",
+                                                    target: "= itemisedCommission",
+                                                    condition: "= rule.condition",
+                                                    pipeline: [
+                                                        {
+                                                            $project: {
+                                                                "@merge": [
+                                                                    {
+                                                                        _id: 0,
+                                                                        agentID: "$itemID01",
+                                                                        ruleID: {
+                                                                            $literal: "= rule._id"
                                                                         },
-                                                                        "# this.get('rule').take"
-                                                                    ]
-                                                                }
+                                                                        commissionValue: {
+                                                                            $literal: "= rule.commission.value"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        transactionFields: {
+                                                                            "@merge": [
+                                                                                {
+                                                                                    transactionID: "$_id"
+                                                                                },
+                                                                                "= rule.take"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
-                                                        ]
-                                                    }
+                                                        }
+                                                    ]
                                                 }
-                                            ]
-                                        }
+                                            }
+                                        ]
                                     }
-                                ]
+                                }
                             }
                         }
                     },

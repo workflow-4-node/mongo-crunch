@@ -28,7 +28,7 @@ TranGen.prototype.createImplementation = function () {
                     "@for": {
                         from: 0,
                         to: "= size",
-                        body: {
+                        args: {
                             "@insert": {
                                 collection: "= coll",
                                 documents: function () {
