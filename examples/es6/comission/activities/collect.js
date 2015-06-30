@@ -15,8 +15,6 @@ function Collect() {
 
     this.source = null;
     this.target = null;
-    this.groupFieldName = null;
-    this.groupFieldValue = null;
     this.pipeline = null;
     this.mr = null;
     this.condition = null;
@@ -102,15 +100,6 @@ Collect.prototype._setupAggregation = function (callContext, pipeline) {
                 $match: condition
             });
         }
-    }
-
-    // Reshaping
-    let groupFieldName = this.get("groupFieldName") || "group";
-    let groupFieldValue = this.get("groupFieldValue");
-    if (!_.isUndefined(groupFieldValue) && !_.isNull(groupFieldValue) && groupFieldValue !== "") {
-        let p = { $project: {} };
-        p.$project[groupFieldName] = { $literal: groupFieldValue };
-        pipeline.push(p);
     }
 
     // Out

@@ -47,7 +47,7 @@ TranGen.prototype.createImplementation = function () {
                                     const numOfID = 9;
                                     const maxID = 1000;
                                     for (let i = 0; i < numOfID; i++) {
-                                        doc[`itemID${key(i)}`] = _.random(1, maxID);
+                                        doc[`itemID${key(i)}`] = _.random(1, 10) * 100;
                                     }
 
                                     // 40-30-20 karakter - valós szám illetve dátum értéket.
@@ -73,7 +73,7 @@ TranGen.prototype.createImplementation = function () {
                                     const numOfNumbers = 30;
                                     const maxNum = 1000000;
                                     for (let i = 0; i < numOfNumbers; i++) {
-                                        doc[`number${key(i)}`] = Math.random() * maxNum;
+                                        doc[`number${key(i)}`] = (maxNum / 2 + (Math.random() * maxNum / 2)) * ((i + 1) / 30);
                                     }
 
                                     // 20 dátum - dátumok 2010.01.01 és 2014.12.31 közöttiek

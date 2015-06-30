@@ -16,7 +16,7 @@ let wf = {
     ],
     "@mongoDBContext": {
         connections: process.env.MONGO_URL,
-        body: {
+        args: {
             "@block": {
                 // Collections:
                 transactions: {
@@ -29,6 +29,13 @@ let wf = {
                 itemisedCommission: {
                     "@collectionRef": {
                         name: "itemisedCommission",
+                        clearBeforeUse: true,
+                        mustExists: false
+                    }
+                },
+                itemisedCommission2: {
+                    "@collectionRef": {
+                        name: "itemisedCommission2",
                         clearBeforeUse: true,
                         mustExists: false
                     }
@@ -62,57 +69,176 @@ let wf = {
                             collection: "= transactions"
                         }
                     },
+                    { "@console": "Transactions generated." },
                     // Compute commission:
+                    //{
+                    //    // Stripes
+                    //    "@eachDocument": {
+                    //        querify: true,
+                    //        varName: "rule",
+                    //        documents: {
+                    //            "@find": {
+                    //                collection: "= ruleList",
+                    //                query: {
+                    //                    $or: [
+                    //                        { "commission.value": { $exists: true } },
+                    //                        { "commission.calculate": { $exists: true } }
+                    //                    ]
+                    //                }
+                    //            }
+                    //        },
+                    //        args: {
+                    //            "@block": [
+                    //                {
+                    //                    "@collect": {
+                    //                        source: "= transactions",
+                    //                        target: "= itemisedCommission",
+                    //                        condition: "= rule.condition",
+                    //                        pipeline: [
+                    //                            {
+                    //                                $project: {
+                    //                                    "@merge": [
+                    //                                        {
+                    //                                            _id: 0,
+                    //                                            agentID: "$itemID01",
+                    //                                            ruleID: {
+                    //                                                $literal: "= rule._id"
+                    //                                            },
+                    //                                            commissionValue: {
+                    //                                                "@switch": [
+                    //                                                    {
+                    //                                                        "@when": {
+                    //                                                            condition: "= rule.commission.value",
+                    //                                                            args: {
+                    //                                                                $literal: "= rule.commission.value"
+                    //                                                            }
+                    //                                                        }
+                    //                                                    },
+                    //                                                    {
+                    //                                                        "@when": {
+                    //                                                            condition: "= rule.commission.calculate",
+                    //                                                            args: "= rule.commission.calculate"
+                    //                                                        }
+                    //                                                    }
+                    //                                                ]
+                    //                                            }
+                    //                                        },
+                    //                                        {
+                    //                                            transactionFields: {
+                    //                                                "@merge": [
+                    //                                                    {
+                    //                                                        ruleID: {
+                    //                                                            $literal: "= rule._id"
+                    //                                                        },
+                    //                                                        transactionID: "$_id"
+                    //                                                    },
+                    //                                                    "= rule.take"
+                    //                                                ]
+                    //                                            }
+                    //                                        }
+                    //                                    ]
+                    //                                }
+                    //                            }
+                    //                        ]
+                    //                    }
+                    //                }
+                    //            ]
+                    //        }
+                    //    }
+                    //},
                     {
+                        // Value + compute
                         "@eachDocument": {
                             querify: true,
                             varName: "rule",
                             documents: {
                                 "@find": {
-                                    collection: "= ruleList"
+                                    collection: "= ruleList",
+                                    query: { "commission.fulfilment": { $exists: true } }
                                 }
                             },
                             args: {
-                                "@if": {
-                                    condition: "= rule.commission.value",
-                                    then: {
-                                        "@block": [
-                                            {
-                                                "@collect": {
-                                                    source: "= transactions",
-                                                    target: "= itemisedCommission",
-                                                    condition: "= rule.condition",
-                                                    pipeline: [
-                                                        {
-                                                            $project: {
-                                                                "@merge": [
-                                                                    {
-                                                                        _id: 0,
-                                                                        agentID: "$itemID01",
-                                                                        ruleID: {
-                                                                            $literal: "= rule._id"
-                                                                        },
-                                                                        commissionValue: {
-                                                                            $literal: "= rule.commission.value"
+                                "@eachDocument": {
+                                    querify: true,
+                                    varName: "plan",
+                                    documents: {
+                                        "@find": {
+                                            collection: "= transactions",
+                                            query: "= rule.commission.fulfilment.plan.conditions"
+                                        }
+                                    },
+                                    args: {
+                                        "@block": {
+                                            planID: "# this.get('plan')[this.get('rule').commission.fulfilment.plan.id]",
+                                            planTime: "# this.get('plan')[this.get('rule').commission.fulfilment.plan.time]",
+                                            planValue: "# this.get('plan')[this.get('rule').commission.fulfilment.plan.value]",
+                                            planAgentID: "# this.get('plan')['itemID01']",
+                                            fulfillCond: null,
+                                            args: [
+                                                {
+                                                    "@assign": {
+                                                        to: "fulfillCond",
+                                                        value: {
+                                                            "@merge": [
+                                                                "= rule.conditions ",
+                                                                {
+                                                                    itemID01: "= planAgentID"
+                                                                },
+                                                                {
+                                                                    "@obj": ["= rule.commission.fulfilment.id", "= planID"]
+                                                                },
+                                                                {
+                                                                    "@obj": [
+                                                                        "= rule.commission.fulfilment.time",
+                                                                        {
+                                                                            $gte: "= planTime"
                                                                         }
-                                                                    },
-                                                                    {
-                                                                        transactionFields: {
-                                                                            "@merge": [
-                                                                                {
-                                                                                    transactionID: "$_id"
-                                                                                },
-                                                                                "= rule.take"
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
+                                                                    ]
+                                                                }
+                                                            ]
                                                         }
-                                                    ]
+                                                    }
+                                                },
+                                                {
+                                                    "@collect": {
+                                                        source: "= transactions",
+                                                        target: "= itemisedCommission2",
+                                                        condition: "= fulfillCond",
+                                                        pipeline: [
+                                                            /*{
+                                                                $project: {
+                                                                    "@merge": [
+                                                                        {
+                                                                            _id: 0,
+                                                                            agentID: "$itemID01",
+                                                                            ruleID: {
+                                                                                $literal: "= rule._id"
+                                                                            },
+                                                                            commissionValue: {
+
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            transactionFields: {
+                                                                                "@merge": [
+                                                                                    {
+                                                                                        ruleID: {
+                                                                                            $literal: "= rule._id"
+                                                                                        },
+                                                                                        transactionID: "$_id"
+                                                                                    },
+                                                                                    "= rule.take"
+                                                                                ]
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }*/
+                                                        ]
+                                                    }
                                                 }
-                                            }
-                                        ]
+                                            ]
+                                        }
                                     }
                                 }
                             }
@@ -140,6 +266,9 @@ let wf = {
                             source: "= aggregatedCommission",
                             target: "= fullCommission",
                             pipeline: [
+                                {
+                                    $unwind: "$transactionFields"
+                                },
                                 {
                                     $group: {
                                         _id: "$_id.agentID",
