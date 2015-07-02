@@ -2,5 +2,6 @@
 
 module.exports = {
     TranGen: require("./tranGen"),
-    Collect: require("./collect")
+    Collect: require("./collect"),
+    PayFields: require("./payFields")
 };

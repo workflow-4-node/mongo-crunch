@@ -8,6 +8,7 @@ let activities = wf4node.activities;
 let ActivityExecutionEngine = activities.ActivityExecutionEngine;
 let path = require("path");
 let util = require("util");
+let _ = require("lodash");
 
 let wf = {
     "@require": [
@@ -174,6 +175,12 @@ let wf = {
                                             planValue: "# this.get('plan')[this.get('rule').commission.fulfilment.plan.value]",
                                             planAgentID: "# this.get('plan')['itemID01']",
                                             fulfillCond: null,
+                                            tmp: {
+                                                "@tempCollectionRef": {
+                                                    namePrefix: "tmp",
+                                                    deleteOnExit: false
+                                                }
+                                            },
                                             args: [
                                                 {
                                                     "@assign": {
@@ -202,10 +209,10 @@ let wf = {
                                                 {
                                                     "@collect": {
                                                         source: "= transactions",
-                                                        target: "= itemisedCommission2",
+                                                        target: "= tmp",
                                                         condition: "= fulfillCond",
                                                         pipeline: [
-                                                            /*{
+                                                            {
                                                                 $project: {
                                                                     "@merge": [
                                                                         {
@@ -214,8 +221,10 @@ let wf = {
                                                                             ruleID: {
                                                                                 $literal: "= rule._id"
                                                                             },
-                                                                            commissionValue: {
-
+                                                                            fulfilmentValue: "# '$' + this.get('rule').commission.fulfilment.value",
+                                                                            fulfilmentID: "# '$' + this.get('rule').commission.fulfilment.id",
+                                                                            planValue: {
+                                                                                $literal: "= planValue"
                                                                             }
                                                                         },
                                                                         {
@@ -227,14 +236,79 @@ let wf = {
                                                                                         },
                                                                                         transactionID: "$_id"
                                                                                     },
+                                                                                    {
+                                                                                        planValue: {
+                                                                                            $literal: "= planValue"
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        "@payFields": "= rule.commission.fulfilment.stripes"
+                                                                                    },
                                                                                     "= rule.take"
                                                                                 ]
                                                                             }
                                                                         }
                                                                     ]
                                                                 }
-                                                            }*/
+                                                            },
+                                                            {
+                                                                $group: {
+                                                                    _id: null,
+                                                                    agentID: {
+                                                                        $first: "$agentID"
+                                                                    },
+                                                                    ruleID: {
+                                                                        $first: "$ruleID"
+                                                                    },
+                                                                    fulfilmentValue: {
+                                                                        $sum: "$fulfilmentValue"
+                                                                    },
+                                                                    planValue: {
+                                                                        $first: "$planValue"
+                                                                    },
+                                                                    transactionFields: { $push: "$transactionFields" }
+                                                                }
+                                                            },
+                                                            {
+                                                                $project: {
+                                                                    agentID: 1,
+                                                                    ruleID: 1,
+                                                                    fulfilmentValue: 1,
+                                                                    planValue: 1,
+                                                                    percent: {
+                                                                        $multiply: [
+                                                                            {
+                                                                                $divide: ["$fulfilmentValue", "$planValue"]
+                                                                            },
+                                                                            100
+                                                                        ]
+                                                                    },
+                                                                    transactionFields: 1
+                                                                }
+                                                            }
                                                         ]
+                                                    }
+                                                },
+                                                {
+                                                    "@collect": {
+                                                        source: "= tmp",
+                                                        target: "= itemisedCommission2",
+                                                        scope: {
+                                                            stripes: "= rule.commission.fulfilment.stripes"
+                                                        },
+                                                        map: function() {
+                                                            var commissionValue = 0;
+                                                            for (var i = 0; i < stripes.length; i++) {
+                                                                var stripe = stripes[i];
+                                                                var from = stripe.from || 0;
+                                                                var to = stripe.to || 100000;
+                                                                
+                                                            }
+                                                            emit(this.agentID, this);
+                                                        },
+                                                        reduce: function(key, values) {
+                                                            return values.length ? values[0] : values;
+                                                        }
                                                     }
                                                 }
                                             ]

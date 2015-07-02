@@ -16,10 +16,16 @@ function Collect() {
     this.source = null;
     this.target = null;
     this.pipeline = null;
-    this.mr = null;
+    this.map = null;
+    this.reduce = null;
+    this.finalize = null;
     this.condition = null;
+    this.scope = null;
     this.pre = null;
     this.reserved("post", null); // It don't run before implementation does.
+    this.codeProperties.add("map");
+    this.codeProperties.add("reduce");
+    this.codeProperties.add("finalize");
 }
 
 util.inherits(Collect, Composite);
@@ -35,13 +41,13 @@ Collect.prototype.createImplementation = function () {
                         condition: "= collectRoot.pipeline",
                         then: {
                             "@if": {
-                                condition: "# typeof this.get('target') !== 'string'",
+                                condition: "# typeof this.get('collectRoot').get('target') !== 'string'",
                                 then: {
                                     "@insert": {
-                                        collection: "= target",
+                                        collection: "= collectRoot.target",
                                         documents: {
                                             "@aggregate": {
-                                                collection: "= source",
+                                                collection: "= collectRoot.source",
                                                 pipeline: "= collectRoot.pipeline"
                                             }
                                         }
@@ -49,14 +55,26 @@ Collect.prototype.createImplementation = function () {
                                 },
                                 else: {
                                     "@aggregate": {
-                                        collection: "= source",
+                                        collection: "= collectRoot.source",
                                         pipeline: "= collectRoot.pipeline"
                                     }
                                 }
                             }
                         },
-                        else: function () {
-                            throw new Error("Not supported yet.");
+                        else: {
+                            "@insert": {
+                                collection: "= collectRoot.target",
+                                documents: {
+                                    "@inlineMR": {
+                                        query: "= collectRoot.condition",
+                                        collection: "= collectRoot.source",
+                                        map: "= collectRoot.map",
+                                        reduce: "= collectRoot.reduce",
+                                        finalize: "= collectRoot.finalize",
+                                        scope: "= collectRoot.scope"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -71,12 +89,14 @@ Collect.prototype.varsDeclared = function (callContext, args) {
     }
 
     let pipeline = this.get("pipeline");
-    let mr = this.get("mr");
+    let map = this.get("map");
+    let reduce = this.get("reduce");
+    let finalize = this.get("finalize") || undefined;
     if (pipeline) {
         callContext.activity._setupAggregation.call(this, callContext, pipeline);
     }
-    else if (mr) {
-        callContext.activity._setupMapReduce.call(this, callContext, pipeline);
+    else if ((_.isFunction(map) || _.isString(map)) && (_.isFunction(reduce) || _.isString(reduce))) {
+        callContext.activity._setupMapReduce.call(this, callContext, map, reduce, finalize);
     }
     else {
         throw new Error("Operation parameters expected.");
@@ -115,8 +135,12 @@ Collect.prototype._setupAggregation = function (callContext, pipeline) {
     this.set("pipeline", pipeline);
 };
 
-Collect.prototype._setupMapReduce = function (callContext, pipeline) {
-    throw new Error("Not supported yet.");
+Collect.prototype._setupMapReduce = function (callContext, map, reduce, finalize) {
+    if (!_.isUndefined(finalize)) {
+        if (!(_.isFunction(finalize) || _.isString(finalize))) {
+            throw new TypeError("Property value of 'finalize' is not a function.");
+        }
+    }
 };
 
 Collect.prototype.implementationCompleted = function (callContext, reason, result) {
