@@ -302,7 +302,7 @@ let wf = {
                                                                 var stripe = stripes[i];
                                                                 var from = stripe.from || 0;
                                                                 var to = stripe.to || 100000;
-                                                                
+
                                                             }
                                                             emit(this.agentID, this);
                                                         },
