@@ -1,6 +1,6 @@
 "use strict";
 /* global describe,it */
-var wf4node = require("../../deps/workflow-4-node");
+var wf4node = require("workflow-4-node");
 var ActivityExecutionEngine = wf4node.activities.ActivityExecutionEngine;
 var _ = require("lodash");
 var assert = require("assert");

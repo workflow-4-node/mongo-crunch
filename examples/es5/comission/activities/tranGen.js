@@ -7,7 +7,7 @@ try {
   es = "es5";
 }
 var util = require("util");
-var wf4node = require("../../../../deps/workflow-4-node");
+var wf4node = require("workflow-4-node");
 var Composite = wf4node.activities.Composite;
 function TranGen() {
   this.reserved("collName", "transactions");

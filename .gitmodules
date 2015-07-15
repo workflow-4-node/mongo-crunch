@@ -1,3 +1,0 @@
-[submodule "deps/workflow-4-node"]
-	path = deps/workflow-4-node
-	url = ../workflow-4-node.git

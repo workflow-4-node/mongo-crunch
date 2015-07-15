@@ -4,7 +4,7 @@ var es = "es6";
 try { eval("(function *(){})"); } catch (err) { es = "es5"; }
 
 let util = require("util");
-let wf4node = require("../../../../deps/workflow-4-node");
+let wf4node = require("workflow-4-node");
 let Composite = wf4node.activities.Composite;
 let path = require("path");
 let _ = require("lodash");

@@ -1,7 +1,7 @@
 "use strict";
 
 let util = require("util");
-let wf4node = require("../../../../deps/workflow-4-node");
+let wf4node = require("workflow-4-node");
 let Activity = wf4node.activities.Activity;
 let path = require("path");
 let _ = require("lodash");
