@@ -23,33 +23,33 @@ describe("MongoDBContext", function () {
 
         var engine = new ActivityExecutionEngine({
             "@require": path.join(__dirname, "../../lib/" + es + "/activities"),
-            block: [
+            "@block": [
                 {
-                    mongoDBContext: {
+                    "@mongoDBContext": {
                         connections: process.env.MONGO_URL,
                         body: {
                             block: {
                                 coll1: {
-                                    collectionRef: {
+                                    "@collectionRef": {
                                         name: "coll1",
                                         mustExists: true
                                     }
                                 },
                                 coll2: {
-                                    collectionRef: {
+                                    "@collectionRef": {
                                         name: "coll2",
                                         mustExists: false,
                                         deleteOnExit: true
                                     }
                                 },
                                 tmp: {
-                                    tempCollectionRef: {
+                                    "@tempCollectionRef": {
                                         namePrefix: "foo"
                                     }
                                 },
                                 args: [
                                     {
-                                        func: {
+                                        "@func": {
                                             code: function () {
                                                 var coll1 = this.get("coll1");
                                                 var coll2 = this.get("coll2");
