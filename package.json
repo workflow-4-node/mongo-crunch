@@ -20,7 +20,7 @@
     "lodash": "^3.9.3",
     "mongodb": "^2.0.34",
     "traceur-runtime": "0.0.59",
-    "workflow-4-node": "git+https://github.com/unbornchikken/workflow-4-node.git#mongo-crunch"
+    "workflow-4-node": "unbornchikken/workflow-4-node#mongo-crunch"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
