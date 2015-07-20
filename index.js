@@ -1,18 +1,16 @@
 var es6 = true;
 try {
     eval("(function *(){})");
-} catch(err) {
+} catch (err) {
     es6 = false;
 }
 
-if (es6) {
-    module.exports = {
-        activities: require("./lib/activities")
-    };
+var es = es6 ? "es6" : "es5";
+
+if (!es6) {
+    require("traceur-runtime");
 }
-else {
-    require("traceur");
-    module.exports = {
-        activities: require("./lib4node/activities")
-    };
-}
+
+module.exports = {
+    activities: require("./lib/" + es + "/activities")
+};
