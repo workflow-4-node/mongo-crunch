@@ -22,7 +22,7 @@
     "traceur-runtime": "0.0.59"
   },
   "peerDependencies": {
-    "workflow-4-node": "unbornchikken/workflow-4-node#mongo-crunch"
+    "workflow-4-node": "0.x"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
