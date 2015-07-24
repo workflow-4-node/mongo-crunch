@@ -27,8 +27,8 @@ describe("MongoDBContext", function () {
                 {
                     "@mongoDBContext": {
                         connections: process.env.MONGO_URL,
-                        body: {
-                            block: {
+                        args: {
+                            "@block": {
                                 coll1: {
                                     "@collectionRef": {
                                         name: "coll1",
@@ -51,9 +51,9 @@ describe("MongoDBContext", function () {
                                     {
                                         "@func": {
                                             code: function () {
-                                                var coll1 = this.get("coll1");
-                                                var coll2 = this.get("coll2");
-                                                var tmp = this.get("tmp");
+                                                let coll1 = this.coll1;
+                                                let coll2 = this.coll2;
+                                                let tmp = this.tmp;
 
                                                 assert(coll1 instanceof Collection);
                                                 assert(coll1.collectionName === "coll1");
@@ -99,6 +99,7 @@ describe("MongoDBContext", function () {
                 assert(false);
             }
             catch (e) {
+                assert(/does not exist/.test(e.message));
             }
             cc = db.listCollections();
             colls = yield Bluebird.promisify(cc.toArray, cc)();

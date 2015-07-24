@@ -12,13 +12,11 @@
     "test": "mocha tests"
   },
   "dependencies": {
-    "backpack-node": "^0.1.25",
     "bluebird": "^2.9.30",
-    "date-utils": "^1.2.17",
     "debug": "^2.2.0",
-    "guid": "0.0.12",
     "lodash": "^3.9.3",
     "mongodb": "^2.0.34",
+    "node-uuid": "^1.4.3",
     "traceur-runtime": "0.0.59"
   },
   "peerDependencies": {

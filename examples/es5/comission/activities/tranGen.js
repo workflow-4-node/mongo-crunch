@@ -19,13 +19,13 @@ TranGen.prototype.createImplementation = function() {
     "@require": path.join(__dirname, "../../../lib/" + es + "/activities"),
     block: {
       coll: {collectionRef: {
-          name: "# this.get('collName')",
+          name: "= this.get('collName')",
           clearBeforeUse: true,
           mustExists: false
         }},
       args: [{for: {
           from: 0,
-          to: "# this.get('size')",
+          to: "= this.get('size')",
           body: {insert: {}}
         }}]
     }

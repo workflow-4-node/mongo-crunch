@@ -41,7 +41,7 @@ Collect.prototype.createImplementation = function () {
                         condition: "= collectRoot.pipeline",
                         then: {
                             "@if": {
-                                condition: "# typeof this.get('collectRoot').get('target') !== 'string'",
+                                condition: "= typeof this.get('collectRoot').get('target') !== 'string'",
                                 then: {
                                     "@insert": {
                                         collection: "= collectRoot.target",

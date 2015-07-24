@@ -170,10 +170,10 @@ let wf = {
                                     },
                                     args: {
                                         "@block": {
-                                            planID: "# this.get('plan')[this.get('rule').commission.fulfilment.plan.id]",
-                                            planTime: "# this.get('plan')[this.get('rule').commission.fulfilment.plan.time]",
-                                            planValue: "# this.get('plan')[this.get('rule').commission.fulfilment.plan.value]",
-                                            planAgentID: "# this.get('plan')['itemID01']",
+                                            planID: "= this.get('plan')[this.get('rule').commission.fulfilment.plan.id]",
+                                            planTime: "= this.get('plan')[this.get('rule').commission.fulfilment.plan.time]",
+                                            planValue: "= this.get('plan')[this.get('rule').commission.fulfilment.plan.value]",
+                                            planAgentID: "= this.get('plan')['itemID01']",
                                             fulfillCond: null,
                                             tmp: {
                                                 "@tempCollectionRef": {
@@ -221,8 +221,8 @@ let wf = {
                                                                             ruleID: {
                                                                                 $literal: "= rule._id"
                                                                             },
-                                                                            fulfilmentValue: "# '$' + this.get('rule').commission.fulfilment.value",
-                                                                            fulfilmentID: "# '$' + this.get('rule').commission.fulfilment.id",
+                                                                            fulfilmentValue: "= '$' + this.get('rule').commission.fulfilment.value",
+                                                                            fulfilmentID: "= '$' + this.get('rule').commission.fulfilment.id",
                                                                             planValue: {
                                                                                 $literal: "= planValue"
                                                                             }
