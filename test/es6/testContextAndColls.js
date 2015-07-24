@@ -60,7 +60,7 @@ describe("MongoDBContext", function () {
                                                 assert(coll2 instanceof Collection);
                                                 assert(coll2.collectionName === "coll2");
                                                 assert(tmp instanceof Collection);
-                                                assert(_.startsWith(tmp.collectionName, "foo"));
+                                                assert(_.startsWith(tmp.collectionName, "~foo"));
                                             }
                                         }
                                     }
