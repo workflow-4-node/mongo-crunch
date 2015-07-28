@@ -26,11 +26,6 @@ describe("Collectionify", function () {
                         connections: process.env.MONGO_URL,
                         args: {
                             "@block": {
-                                tmp: {
-                                    "@tempCollectionRef": {
-                                        name: "foo"
-                                    }
-                                },
                                 stuff: [
                                     {
                                         _id: 1,
