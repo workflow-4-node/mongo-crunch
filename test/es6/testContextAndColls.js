@@ -44,7 +44,7 @@ describe("MongoDBContext", function () {
                                 },
                                 tmp: {
                                     "@tempCollectionRef": {
-                                        namePrefix: "foo"
+                                        name: "foo"
                                     }
                                 },
                                 args: [
@@ -56,11 +56,11 @@ describe("MongoDBContext", function () {
                                                 let tmp = this.tmp;
 
                                                 assert(coll1 instanceof Collection);
-                                                assert(coll1.collectionName === "coll1");
+                                                assert.equal(coll1.collectionName, "coll1");
                                                 assert(coll2 instanceof Collection);
-                                                assert(coll2.collectionName === "coll2");
+                                                assert.equal(coll2.collectionName, "coll2");
                                                 assert(tmp instanceof Collection);
-                                                assert(_.startsWith(tmp.collectionName, "~foo"));
+                                                assert(_.startsWith(tmp.collectionName, "~foo"), `${tmp.collectionName} is not starts with '~foo'`);
                                             }
                                         }
                                     }
