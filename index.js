@@ -12,5 +12,6 @@ if (!es6) {
 }
 
 module.exports = {
-    activities: require("./lib/" + es + "/activities")
+    activities: require("./lib/" + es + "/activities"),
+    config: require("./lib/" + es + "/config"),
 };

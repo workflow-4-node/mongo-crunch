@@ -1,1 +1,3 @@
-require("./testContextAndColls");
+"use strict";
+require("./contextAndColls");
+require("./insertAndEachDocuments");

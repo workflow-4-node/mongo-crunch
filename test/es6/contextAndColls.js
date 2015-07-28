@@ -1,14 +1,15 @@
 "use strict";
 /* global describe,it */
-var wf4node = require("workflow-4-node");
-var ActivityExecutionEngine = wf4node.activities.ActivityExecutionEngine;
-var _ = require("lodash");
-var assert = require("assert");
-var path = require("path");
-var Bluebird = require("bluebird");
-var async = Bluebird.coroutine;
-var Collection = require("mongodb").Collection;
-var MongoClient = Bluebird.promisifyAll(require("mongodb").MongoClient);
+let wf4node = require("workflow-4-node");
+let ActivityExecutionEngine = wf4node.activities.ActivityExecutionEngine;
+let _ = require("lodash");
+let assert = require("assert");
+let path = require("path");
+let Bluebird = require("bluebird");
+let async = Bluebird.coroutine;
+let Collection = require("mongodb").Collection;
+let MongoClient = Bluebird.promisifyAll(require("mongodb").MongoClient);
+let helpers = require("./helpers");
 
 var es = "es6";
 try {
@@ -18,6 +19,10 @@ try {
 }
 
 describe("MongoDBContext", function () {
+    beforeEach(function(done) {
+        helpers.deleteColls().nodeify(done);
+    });
+
     it("should open a connection as default, and use some collections", function (done) {
         this.timeout(3000);
 
@@ -73,8 +78,8 @@ describe("MongoDBContext", function () {
         });
 
         async(function*() {
-            var db = yield Bluebird.promisify(MongoClient.connect, MongoClient)(process.env.MONGO_URL);
-            var coll1 = yield Bluebird.promisify(db.collection, db)("coll1");
+            let db = yield Bluebird.promisify(MongoClient.connect, MongoClient)(process.env.MONGO_URL);
+            let coll1 = yield Bluebird.promisify(db.collection, db)("coll1");
             yield Bluebird.promisify(coll1.deleteMany, coll1)({}, { w: 1 });
             yield Bluebird.promisify(coll1.insert, coll1)([
                 {
@@ -88,10 +93,10 @@ describe("MongoDBContext", function () {
 
             yield engine.invoke();
 
-            var cc = db.listCollections();
-            var colls = yield Bluebird.promisify(cc.toArray, cc)();
+            let cc = db.listCollections();
+            let colls = yield Bluebird.promisify(cc.toArray, cc)();
             assert.equal(_.where(colls, { name: "coll2" }).length, 0);
-            assert.equal(colls.filter(function(c) { return _.startsWith(c.name, "foo_tmp_"); }).length, 0);
+            assert.equal(colls.filter(function(c) { return _.startsWith(c.name, "~foo"); }).length, 0);
 
             yield Bluebird.promisify(coll1.drop, coll1)();
             try {
