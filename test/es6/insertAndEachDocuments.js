@@ -83,7 +83,7 @@ describe("Insert and EachDocuments", function () {
 
         async(function*() {
             let result = yield engine.invoke();
-            assert.equal(1 + 2 + 3, result);
+            assert.equal(result, 1 + 2 + 3);
         })().nodeify(done);
     });
 
@@ -170,7 +170,7 @@ describe("Insert and EachDocuments", function () {
 
         async(function*() {
             let result = yield engine.invoke();
-            assert.equal("HelloWorldWoot", result);
+            assert.equal(result, "HelloWorldWoot");
         })().nodeify(done);
     });
 });
