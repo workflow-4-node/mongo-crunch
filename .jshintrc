@@ -3,5 +3,6 @@
   "esnext": true,
   "node": true,
   "browser": true,
-  "-W061": false
+  "-W061": false,
+  "-W083": false
 }

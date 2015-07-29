@@ -16,7 +16,7 @@ let async = Bluebird.coroutine;
 
 describe("Apply", function () {
     describe("Cross Apply", function () {
-        it("should do a simple cross apply", function (done) {
+        it("should do a flat cross apply", function (done) {
             this.timeout(30000);
 
             var engine = new ActivityExecutionEngine({
@@ -107,7 +107,7 @@ describe("Apply", function () {
     });
 
     describe("Outer Apply", function () {
-        it("should do a simple outer apply", function (done) {
+        it("should do a flat outer apply", function (done) {
             this.timeout(30000);
 
             var engine = new ActivityExecutionEngine({
