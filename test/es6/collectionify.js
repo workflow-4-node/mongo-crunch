@@ -70,7 +70,7 @@ describe("Collectionify", function () {
             let result = yield engine.invoke();
             assert(_.isArray(result));
             assert.equal(result.length, 2);
-            assert.equal(2 + 3, _(result).map(function(i) { return i._id; }).sum());
+            assert.equal(_(result).map(function(i) { return i._id; }).sum(), 2 + 3);
         })().nodeify(done);
     });
 });
