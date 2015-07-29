@@ -156,6 +156,11 @@ describe("Apply", function () {
                                             _id: 3,
                                             str: "Klow",
                                             bool: false
+                                        },
+                                        {
+                                            _id: 4,
+                                            str: "Hello",
+                                            bool: true
                                         }
                                     ],
                                     args: {
@@ -194,9 +199,20 @@ describe("Apply", function () {
                 assert.equal(doc.text.value, "Hello");
                 assert.equal(doc.other.str, "Hello");
                 assert(doc.other.bool);
-                for (let item of result.slice(1)) {
-                    assert.deepEqual(doc.other, null);
+                assert.equal(doc.other._id, 1);
+                doc = result[1];
+                assert.equal(doc._id, 1);
+                assert.equal(doc.num, 1);
+                assert.equal(doc.text.value, "Hello");
+                assert.equal(doc.other.str, "Hello");
+                assert(doc.other.bool);
+                assert.equal(doc.other._id, 4);
+                let sum = 0;
+                for (let item of result.slice(2)) {
+                    assert.deepEqual(item.other, null);
+                    sum += item.num;
                 }
+                assert.equal(sum, 2 + 3);
             })().nodeify(done);
         });
     });
