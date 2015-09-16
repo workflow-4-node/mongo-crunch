@@ -1,33 +1,33 @@
 {
   "name": "mongo-crunch",
   "description": "Workflow 4 Node extensions for MongoDB",
-  "version": "0.0.3",
+  "version": "0.5.0",
   "license": "LGPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/unbornchikken/mongo-crunch"
+    "url": "https://github.com/workflow-4-node/mongo-crunch"
   },
   "main": "./index",
   "scripts": {
     "test": "mocha tests"
   },
   "dependencies": {
-    "bluebird": "^2.9.30",
-    "date-utils": "^1.2.17",
-    "debug": "^2.2.0",
-    "lodash": "^3.9.3",
-    "mongodb": "^2.0.34",
-    "node-uuid": "^1.4.3",
-    "traceur-runtime": "0.0.59"
+    "bluebird": "*",
+    "date-utils": "*",
+    "debug": "*",
+    "lodash": "*",
+    "mongodb": "2",
+    "node-uuid": "*",
+    "traceur-runtime": "*"
   },
   "peerDependencies": {
     "workflow-4-node": "0.x"
   },
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-sequence": "^0.3.2",
-    "gulp-traceur": "^0.17.1",
-    "mocha": "^2.2.5",
-    "traceur": "0.0.90"
+    "gulp": "*",
+    "gulp-sequence": "*",
+    "gulp-traceur": "*",
+    "mocha": "*",
+    "traceur": "*"
   }
 }
