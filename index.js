@@ -8,10 +8,10 @@ try {
 var es = es6 ? "es6" : "es5";
 
 if (!es6) {
-    require("traceur-runtime");
+    require("traceur/bin/traceur-runtime");
 }
 
 module.exports = {
     activities: require("./lib/" + es + "/activities"),
-    config: require("./lib/" + es + "/config"),
+    config: require("./lib/" + es + "/config")
 };

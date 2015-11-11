@@ -8,7 +8,7 @@ let path = require("path");
 let Bluebird = require("bluebird");
 let async = Bluebird.coroutine;
 let Collection = require("mongodb").Collection;
-let MongoClient = Bluebird.promisifyAll(require("mongodb").MongoClient);
+let MongoClient = require("mongodb").MongoClient;
 let helpers = require("./helpers");
 
 var es = "es6";
@@ -19,7 +19,7 @@ try {
 }
 
 describe("MongoDBContext", function () {
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         helpers.deleteColls().nodeify(done);
     });
 
@@ -78,10 +78,10 @@ describe("MongoDBContext", function () {
         });
 
         async(function*() {
-            let db = yield Bluebird.promisify(MongoClient.connect, MongoClient)(process.env.MONGO_URL);
-            let coll1 = yield Bluebird.promisify(db.collection, db)("coll1");
-            yield Bluebird.promisify(coll1.deleteMany, coll1)({}, { w: 1 });
-            yield Bluebird.promisify(coll1.insert, coll1)([
+            let db = yield MongoClient.connect(process.env.MONGO_URL);
+            let coll1 = yield Bluebird.promisify(db.collection, {context: db})("coll1");
+            yield coll1.deleteMany({}, {w: 1});
+            yield coll1.insert([
                 {
                     name: "Bubu",
                     score: 1
@@ -89,16 +89,18 @@ describe("MongoDBContext", function () {
                 {
                     name: "Zuzu",
                     score: 7
-                }], { w: 1 });
+                }], {w: 1});
 
             yield engine.invoke();
 
             let cc = db.listCollections();
-            let colls = yield Bluebird.promisify(cc.toArray, cc)();
-            assert.equal(_.where(colls, { name: "coll2" }).length, 0);
-            assert.equal(colls.filter(function(c) { return _.startsWith(c.name, "~foo"); }).length, 0);
+            let colls = yield cc.toArray();
+            assert.equal(_.where(colls, {name: "coll2"}).length, 0);
+            assert.equal(colls.filter(function (c) {
+                return _.startsWith(c.name, "~foo");
+            }).length, 0);
 
-            yield Bluebird.promisify(coll1.drop, coll1)();
+            yield coll1.drop();
             try {
                 yield engine.invoke();
                 assert(false);
@@ -107,8 +109,8 @@ describe("MongoDBContext", function () {
                 assert(/does not exist/.test(e.message));
             }
             cc = db.listCollections();
-            colls = yield Bluebird.promisify(cc.toArray, cc)();
-            assert.equal(colls.length, 1);
+            colls = yield cc.toArray();
+            assert.equal(colls.length, 0);
 
         })().nodeify(done);
     });

@@ -2,18 +2,17 @@
 
 let Bluebird = require("bluebird");
 let async = Bluebird.coroutine;
-let pro = Bluebird.promisify;
-let MongoClient = Bluebird.promisifyAll(require("mongodb").MongoClient);
+let MongoClient = require("mongodb").MongoClient;
 let _ = require("lodash");
 
 let helpers = {
     deleteColls: async(function*() {
-        let db = yield pro(MongoClient.connect, MongoClient)(process.env.MONGO_URL);
+        let db = yield MongoClient.connect(process.env.MONGO_URL);
         let cc = db.listCollections();
-        let colls = yield pro(cc.toArray, cc)();
+        let colls = yield cc.toArray();
         for (let coll of colls) {
             if (!_.startsWith(coll.name, "system.")) {
-                yield db.collection(coll.name).drop();
+                (yield Bluebird.promisify(db.collection, {context: db})(coll.name)).drop();
             }
         }
     })
